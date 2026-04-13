@@ -4,7 +4,7 @@ public interface PilaTDA {
 
     public void inicializar();
 
-    public void acolar(String valor);
+    public void apilar(String valor);
 
     public void desapilar();
 

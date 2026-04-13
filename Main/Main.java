@@ -14,20 +14,21 @@ import test.CargaDeDatos;
 import java.util.Scanner;
 
 public class Main {
-
+    static Scanner teclado = new Scanner(System.in);
     //Muestra las materias que hay en el conjunto
     public static void MostrarMaterias(ConjuntoStringTDA c1){
         ConjuntoStringTDA aux = new ConjuntoEstaticoStringTDA();
         aux.inicializar();
         while (!c1.estaVacio()) {
             Materias valor = c1.elegir();
-            aux.agregar(c1.elegir());
-            System.out.println(valor.getCodigo()+"|"+valor.getMateria());
+            System.out.println(valor.getCodigo() + "|" + valor.getMateria());
+            aux.agregar(valor);
             c1.sacar(valor);
         }
+        // Restauramos los datos al conjunto original
         while (!aux.estaVacio()) {
             Materias valor = aux.elegir();
-            c1.agregar(aux.elegir());
+            c1.agregar(valor);
             aux.sacar(valor);
         }
     }
@@ -40,7 +41,6 @@ public class Main {
 
     //Funcion de un string vacio para leer los mensajes(como si fuese una pausa) por terminal
     public static void Pausa(){
-        Scanner teclado = new Scanner(System.in);
         System.out.println("Presione enter para continuar");
         teclado.nextLine();
     }
@@ -48,8 +48,6 @@ public class Main {
     //Funcion para agregar materias al ConjuntoTDA Estatico
     public static void AgregarMateria(ConjuntoStringTDA c1){
 
-
-        Scanner teclado = new Scanner(System.in);
         String materia;
         String codigo;
 
@@ -74,7 +72,6 @@ public class Main {
 
     //Funcion para sacar materias al ConjuntoTDA Estatico
     public static void SacarMateria(ConjuntoStringTDA c1){
-        Scanner teclado = new Scanner(System.in);
         String codigo;
         String materia;
 
@@ -100,7 +97,7 @@ public class Main {
 
     //Funcion para Inscribirse a una materia a traves del dni del alumno
     public static void InscribirseMateria(ConjuntoStringTDA c1,DiccionarioSimpleTDA d1,ColaTDA cd1){
-        Scanner teclado = new Scanner(System.in);
+
         String codigo;
         String materia;
         int dni;
@@ -121,9 +118,9 @@ public class Main {
         else{
             System.out.println("Introduce su numero de dni");
             dni = teclado.nextInt();
-            ConjuntoEstaticoTDA claves = d1.obtenerClaves();
-            if(claves.pertenece(dni)){
-                Alumnos alumno = d1.recuperar(dni);
+            teclado.nextLine();
+            Alumnos alumno = d1.recuperar(dni);
+            if(alumno != null){
                 String l = String.valueOf(dni);
                 System.out.println(l);
                 if(!alumno.getMateriasInscriptas().pertenece(m)){
@@ -141,10 +138,24 @@ public class Main {
         }
 
     }
+    public static void ProcesarInscripciones(ColaTDA cd1, DiccionarioSimpleTDA d1) {
+        while (!cd1.estaVacia()) {
+            String valor = cd1.primero();
+            String[] partes = valor.split("\\|");
+            int dni = Integer.parseInt(partes[0]);
+            Materias m = new Materias(partes[1], partes[2]);
+
+            Alumnos alumno = d1.recuperar(dni);
+            if (alumno != null && !alumno.getMateriasInscriptas().pertenece(m)) {
+                alumno.getMateriasInscriptas().agregar(m);
+            }
+            cd1.desacolar();
+        }
+    }
 
     //Funcion para Deinscribirse a una materia a traves del dni del alumno
     public static void DesinscribirseMateria(ConjuntoStringTDA c1,DiccionarioSimpleTDA d1,ColaTDA cd2){
-        Scanner teclado = new Scanner(System.in);
+
         String codigo;
         String materia;
         int dni;
@@ -164,10 +175,10 @@ public class Main {
         else{
             System.out.println("Introduce su numero de dni");
             dni = teclado.nextInt();
-            ConjuntoEstaticoTDA claves = d1.obtenerClaves();
+            teclado.nextLine();
+            Alumnos alumno = d1.recuperar(dni);
 
-            if(claves.pertenece(dni)){
-                Alumnos alumno = d1.recuperar(dni);
+            if(alumno != null){
                 String l = String.valueOf(dni);
                 if(alumno.getMateriasInscriptas().pertenece(m)){
                     cd2.acolar(l+"|"+codigo+"|"+materia);
@@ -185,27 +196,22 @@ public class Main {
     }
 
     //Funcion para procesar las inscripciones hechas por los alumnos a traves de la ColaDinamicaTDA
-    public static void ProcesarInscirpciones(ColaTDA cd1,ColaTDA cd2,DiccionarioSimpleTDA d1){
-        while(!cd1.estaVacia()){
-            String valor = cd1.primero();
+    public static void ProcesarDesinscripciones(ColaTDA cd2, DiccionarioSimpleTDA d1){
+        while(!cd2.estaVacia()){
+            String valor = cd2.primero();
             String[] partes = valor.split("\\|");
-            ConjuntoEstaticoTDA claves = d1.obtenerClaves();
-            int l = Integer.parseInt(partes[0]);
-            Materias m = new Materias(partes[1],partes[2]);
-            if(claves.pertenece(l)){
-                Alumnos alumno = d1.recuperar(l);
-                if(!alumno.getMateriasInscriptas().pertenece(m)){
-                    ConjuntoStringTDA aux = alumno.getMateriasInscriptas();
-                    aux.agregar(m);
-                    cd1.desacolar();
+            int dni = Integer.parseInt(partes[0]);
+            Materias m = new Materias(partes[1], partes[2]);
+
+            Alumnos alumno = d1.recuperar(dni);
+            if(alumno != null){
+                if(alumno.getMateriasInscriptas().pertenece(m)) {
+                    alumno.getMateriasInscriptas().sacar(m);
                 }
-          }
-            else {
-                cd1.desacolar();
             }
+            cd2.desacolar();
         }
-        System.out.println("Se procesaron todas las inscripciones");
-        Pausa();
+        System.out.println("Se procesaron todas las desinscripciones");
     }
 
     //Funcion main donde se ejecuta el menu y carga de datos
@@ -221,7 +227,7 @@ public class Main {
         d1.inicializar();
 
         CargaDeDatos.cargarDatos(c1,cd1,d1);
-        Scanner teclado = new Scanner(System.in);
+
         int opcion;
 
         while(true){
@@ -235,6 +241,7 @@ public class Main {
             System.out.println("[5],Procesar Inscripciones");
 
             opcion = teclado.nextInt();
+            teclado.nextLine();
             if(opcion==0){
                 break;
             }
@@ -250,8 +257,12 @@ public class Main {
             else if(opcion==4){
                 DesinscribirseMateria(c1,d1,cd2);
             }
-            else if(opcion==5){
-                ProcesarInscirpciones(cd1,cd2,d1);
+            else if(opcion == 5) {
+                // se llama a los dos prosc
+                ProcesarInscripciones(cd1, d1);
+                ProcesarDesinscripciones(cd2, d1);
+                System.out.println("Todos los cambios procesados.");
+                Pausa();
             }
             else{
                 System.out.println("Opcion invalida");
@@ -264,13 +275,23 @@ public class Main {
         while(!claves.estaVacio()) {
             int d = claves.elegir();
             Alumnos alumno = d1.recuperar(d);
-            ConjuntoStringTDA aux2 = alumno.getMateriasInscriptas();
-            while (!aux2.estaVacio()) {
-                Materias valor = aux2.elegir();
-                System.out.println(d+"|"+alumno.getNombre()+"|"+valor.getCodigo() + "|" + valor.getMateria());
-                aux2.sacar(valor);
-                claves.sacar(d);
+            ConjuntoStringTDA materiasAlumno = alumno.getMateriasInscriptas();
+            ConjuntoStringTDA auxReporte = new ConjuntoEstaticoStringTDA();
+            auxReporte.inicializar();
+
+            while (!materiasAlumno.estaVacio()) {
+                Materias m = materiasAlumno.elegir();
+                System.out.println(d + "|" + alumno.getNombre() + "|" + m.getCodigo() + "|" + m.getMateria());
+                auxReporte.agregar(m);
+                materiasAlumno.sacar(m);
+            }
+            // se restaura la mat del alumn
+            while(!auxReporte.estaVacio()){
+                Materias m = auxReporte.elegir();
+                materiasAlumno.agregar(m);
+                auxReporte.sacar(m);
+            }
+            claves.sacar(d);
             }
         }
     }
-}
