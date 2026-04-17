@@ -5,15 +5,15 @@ import Implementacion.ConjuntoEstaticoTDA;
 
 public interface DiccionarioSimpleTDA {
 
-    public void inicializar();
+    public void InicializarDiccionario();
 
-    public void agregar(int clave, Alumnos valor);
+    public void Agregar(int clave, Alumnos valor);
 
-    public void eliminar(int clave);
+    public void Eliminar(int clave);
 
-    public Alumnos recuperar(int clave);
+    public Alumnos Recuperar(int clave);
 
-    public ConjuntoEstaticoTDA obtenerClaves();
+    public ConjuntoEstaticoTDA ObtenerClaves();
 
 
 

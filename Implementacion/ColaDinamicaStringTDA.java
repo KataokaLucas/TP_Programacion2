@@ -4,49 +4,47 @@ import tdas.ColaTDA;
 
 public class ColaDinamicaStringTDA implements ColaTDA {
 
-    class nodo{
+    class Nodo{
         String valor;
-        nodo siguiente;
+        Nodo siguiente;
     }
 
-    nodo primero;
-    nodo ultimo;
+    Nodo primero;
+    Nodo ultimo;
 
     @Override
-    public void inicializar() {
+    public void InicializarCola() {
         primero = null;
         ultimo = null;
     }
 
     @Override
-    public void acolar(String valor) {
-        nodo aux = new nodo();
+    public void Acolar(String valor) {
+        Nodo aux = new Nodo();
         aux.valor = valor;
-        if(primero == null){
-            primero = aux;
-            ultimo = aux;
-            aux.siguiente = null;
+        if(ultimo != null){
+            ultimo.siguiente = aux;;
         }
-        else {
-            ultimo.siguiente = aux;
-            ultimo = aux;
+        ultimo = aux;
+        if(primero==null){
+            primero = ultimo;
         }
     }
 
     @Override
-    public void desacolar() {
+    public void Desacolar() {
         primero = primero.siguiente;
         if(primero == null)
             ultimo = null;
     }
 
     @Override
-    public boolean estaVacia() {
+    public boolean ColaVacia() {
         return primero == null;
     }
 
     @Override
-    public String primero() {
+    public String Primero() {
         return primero.valor;
     }
 }

@@ -2,14 +2,14 @@ package tdas;
 
 public interface ColaTDA {
 
-    public void inicializar();
+    public void InicializarCola();
 
-    public void acolar(String valor);
+    public void Acolar(String valor);
 
-    public void desacolar();
+    public void Desacolar();
 
-    public boolean estaVacia();
+    public boolean ColaVacia();
 
-    public String primero();
+    public String Primero();
 
 }

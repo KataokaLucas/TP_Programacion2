@@ -14,14 +14,14 @@ public class DiccionarioSimpleEstaticoTDA implements tdas.DiccionarioSimpleTDA {
     private int cantidad;
 
     @Override
-    public void inicializar() {
+    public void InicializarDiccionario() {
         valores = new nodo[100];
         cantidad = 0;
 
     }
 
     @Override
-    public void agregar(int clave, Alumnos valor) {
+    public void Agregar(int clave, Alumnos valor) {
         int pos = clave2Pos(clave);
         if(pos==-1) {
             nodo aux = new nodo();
@@ -37,7 +37,7 @@ public class DiccionarioSimpleEstaticoTDA implements tdas.DiccionarioSimpleTDA {
     }
 
     @Override
-    public void eliminar(int clave) {
+    public void Eliminar(int clave) {
         int pos = clave2Pos(clave);
         if(pos!= -1) {
             valores[pos] = valores[cantidad - 1];
@@ -47,9 +47,8 @@ public class DiccionarioSimpleEstaticoTDA implements tdas.DiccionarioSimpleTDA {
     }
 
     @Override
-    public Alumnos recuperar(int clave) {
+    public Alumnos Recuperar(int clave) {
         int pos = clave2Pos(clave);
-
         if(pos != -1) {
             return valores[pos].valor;
         }
@@ -57,7 +56,7 @@ public class DiccionarioSimpleEstaticoTDA implements tdas.DiccionarioSimpleTDA {
     }
 
     @Override
-    public ConjuntoEstaticoTDA obtenerClaves() {
+    public ConjuntoEstaticoTDA ObtenerClaves() {
         ConjuntoEstaticoTDA resultado = new ConjuntoEstaticoTDA();
         resultado.inicializar();
         for(int i=0; i<cantidad; i++)

@@ -1,43 +1,90 @@
 package Main;
 
-
 import Entidades.Alumnos;
 import Entidades.Materias;
 import Implementacion.ColaDinamicaStringTDA;
-import Implementacion.ConjuntoEstaticoStringTDA;
+import Implementacion.ConjuntoEstaticoMateriasTDA;
 import Implementacion.ConjuntoEstaticoTDA;
 import Implementacion.DiccionarioSimpleEstaticoTDA;
 import tdas.ColaTDA;
-import tdas.ConjuntoStringTDA;
+import tdas.ConjuntoMateriasTDA;
 import tdas.DiccionarioSimpleTDA;
 import test.CargaDeDatos;
 import java.util.Scanner;
 
 public class Main {
     static Scanner teclado = new Scanner(System.in);
+
     //Muestra las materias que hay en el conjunto
-    public static void MostrarMaterias(ConjuntoStringTDA c1){
-        ConjuntoStringTDA aux = new ConjuntoEstaticoStringTDA();
-        aux.inicializar();
-        while (!c1.estaVacio()) {
-            Materias valor = c1.elegir();
+    public static void MostrarMaterias(ConjuntoMateriasTDA c1) {
+
+        //Nos ayudamos con un Conjunto auxiliar para volver a reconstruir el conjunto original
+        ConjuntoMateriasTDA aux = new ConjuntoEstaticoMateriasTDA();
+        aux.InicializarConjunto();
+        while (!c1.ConjuntoVacio()) {
+            Materias valor = c1.Elegir();
             System.out.println(valor.getCodigo() + "|" + valor.getMateria());
-            aux.agregar(valor);
-            c1.sacar(valor);
+            aux.Agregar(valor);
+            c1.Sacar(valor);
         }
         // Restauramos los datos al conjunto original
-        while (!aux.estaVacio()) {
-            Materias valor = aux.elegir();
-            c1.agregar(valor);
-            aux.sacar(valor);
+        while (!aux.ConjuntoVacio()) {
+            Materias valor = aux.Elegir();
+            c1.Agregar(valor);
+            aux.Sacar(valor);
         }
     }
 
+    //Muestra a los alumnos con sus materias inscriptas
+    public static void mostarAlumnos(DiccionarioSimpleTDA d1){
 
-    public static Materias crearMateria(String codigo,String materia){
-        Materias m;
-        return m = new Materias(codigo,materia);
+    //Utilizamos el metodo recuperar del diccionario para obtener los valores a partir de las claves(dni) de los alumnos
+    ConjuntoEstaticoTDA claves = d1.ObtenerClaves();
+        while(!claves.estaVacio()) {
+        int dni = claves.elegir();
+        Alumnos alumno = d1.Recuperar(dni);
+        ConjuntoMateriasTDA materiasAlumno = alumno.getMateriasInscriptas();
+        ConjuntoMateriasTDA auxReporte = new ConjuntoEstaticoMateriasTDA();
+        auxReporte.InicializarConjunto();
+
+        //Muestra los alumnos que no estan inscriptos a ninguna materia
+        if(materiasAlumno.ConjuntoVacio()){
+            System.out.println(dni + "|" + alumno.getNombre() + "|" );
+        }
+        //Muestra los alumnos que estan inscripto a una o mas materias
+        else {
+            System.out.println(dni + "|" + alumno.getNombre());
+            while (!materiasAlumno.ConjuntoVacio()) {
+                Materias m = materiasAlumno.Elegir();
+                System.out.println("|" + m.getCodigo() + "|" + m.getMateria());
+                auxReporte.Agregar(m);
+                materiasAlumno.Sacar(m);
+            }
+        }
+        System.out.println("----------------");
+        // Se restaura las materias del alumno
+        while (!auxReporte.ConjuntoVacio()) {
+            Materias m = auxReporte.Elegir();
+            materiasAlumno.Agregar(m);
+            auxReporte.Sacar(m);
+        }
+        claves.sacar(dni);
     }
+}
+
+    //Elimina la materia del conjunto del alumno que ya no existe en el conjunto principal de materias
+    public static void eliminarMateriaDelAlumno(DiccionarioSimpleTDA d1, Materias m){
+    ConjuntoEstaticoTDA claves = d1.ObtenerClaves();
+        while(!claves.estaVacio()) {
+        int dni = claves.elegir();
+        Alumnos alumno = d1.Recuperar(dni);
+        ConjuntoMateriasTDA materiasAlumno = alumno.getMateriasInscriptas();
+        if(materiasAlumno.Pertenece(m)){
+            materiasAlumno.Sacar(m);
+        }
+        claves.sacar(dni);
+    }
+}
 
     //Funcion de un string vacio para leer los mensajes(como si fuese una pausa) por terminal
     public static void Pausa(){
@@ -46,7 +93,7 @@ public class Main {
     }
 
     //Funcion para agregar materias al ConjuntoTDA Estatico
-    public static void AgregarMateria(ConjuntoStringTDA c1){
+    public static void AgregarMateria(ConjuntoMateriasTDA c1){
 
         String materia;
         String codigo;
@@ -58,20 +105,19 @@ public class Main {
         System.out.println("Nombre la materia que desea agregar:");
         materia = teclado.nextLine();
         Materias m = new Materias(codigo,materia);
-        if(c1.pertenece(m)){
+        if(c1.Pertenece(m)){
             System.out.println("La materia ya existe en el sistema");
             Pausa();
         }
         else{
-            Materias resultado = crearMateria(codigo, materia);
-            c1.agregar(resultado);
+            c1.Agregar(m);
             System.out.println("La materia se agrego correctamente");
             Pausa();
         }
     }
 
     //Funcion para sacar materias al ConjuntoTDA Estatico
-    public static void SacarMateria(ConjuntoStringTDA c1){
+    public static void SacarMateria(ConjuntoMateriasTDA c1, DiccionarioSimpleTDA d1){
         String codigo;
         String materia;
 
@@ -83,12 +129,13 @@ public class Main {
         materia = teclado.nextLine();
         Materias m = new Materias(codigo,materia);
 
-        if(!c1.pertenece(m)){
+        if(!c1.Pertenece(m)){
             System.out.println("La materia no existe en el sistema");
             Pausa();
         }
         else{
-            c1.sacar(m);
+            eliminarMateriaDelAlumno(d1, m);
+            c1.Sacar(m);
             System.out.println("La materia se elimino correctamente");
             Pausa();
 
@@ -96,7 +143,7 @@ public class Main {
     }
 
     //Funcion para Inscribirse a una materia a traves del dni del alumno
-    public static void InscribirseMateria(ConjuntoStringTDA c1,DiccionarioSimpleTDA d1,ColaTDA cd1){
+    public static void InscribirseMateria(ConjuntoMateriasTDA c1, DiccionarioSimpleTDA d1, ColaTDA cd1){
 
         String codigo;
         String materia;
@@ -111,20 +158,20 @@ public class Main {
         Materias m = new Materias(codigo,materia);
 
 
-        if(!c1.pertenece(m)){
+        if(!c1.Pertenece(m)){
             System.out.println("La materia no existe en el sistema");
             Pausa();
         }
         else{
+            //Buscamos con el metodo recuperar para obtener el conjunto del alumno para verficar si la materia ya pertenece al mismo
             System.out.println("Introduce su numero de dni");
             dni = teclado.nextInt();
             teclado.nextLine();
-            Alumnos alumno = d1.recuperar(dni);
+            Alumnos alumno = d1.Recuperar(dni);
             if(alumno != null){
-                String l = String.valueOf(dni);
-                System.out.println(l);
-                if(!alumno.getMateriasInscriptas().pertenece(m)){
-                    cd1.acolar(l+"|"+codigo+"|"+materia);
+                String stringDNI = String.valueOf(dni);
+                if(!alumno.getMateriasInscriptas().Pertenece(m)){
+                    cd1.Acolar(stringDNI+"|"+codigo+"|"+materia);
                     System.out.println("El pedido de inscripcion se hizo correctamnete");
                     Pausa();
                 }
@@ -138,23 +185,26 @@ public class Main {
         }
 
     }
-    public static void ProcesarInscripciones(ColaTDA cd1, DiccionarioSimpleTDA d1) {
-        while (!cd1.estaVacia()) {
-            String valor = cd1.primero();
+
+    //Funcion para procesar las inscripciones hechas por los alumnos a traves de la ColaDinamicaTDA
+    public static void ProcesarInscripciones(ColaTDA cd1, DiccionarioSimpleTDA d1, ConjuntoMateriasTDA c1) {
+        //Utilizamos el metodo split para poder separar los datos que recibimos como String para manipularlos
+        while (!cd1.ColaVacia()) {
+            String valor = cd1.Primero();
             String[] partes = valor.split("\\|");
             int dni = Integer.parseInt(partes[0]);
             Materias m = new Materias(partes[1], partes[2]);
 
-            Alumnos alumno = d1.recuperar(dni);
-            if (alumno != null && !alumno.getMateriasInscriptas().pertenece(m)) {
-                alumno.getMateriasInscriptas().agregar(m);
+            Alumnos alumno = d1.Recuperar(dni);
+            if (alumno != null && !alumno.getMateriasInscriptas().Pertenece(m) && c1.Pertenece(m)) {
+                alumno.getMateriasInscriptas().Agregar(m);
             }
-            cd1.desacolar();
+            cd1.Desacolar();
         }
     }
 
     //Funcion para Deinscribirse a una materia a traves del dni del alumno
-    public static void DesinscribirseMateria(ConjuntoStringTDA c1,DiccionarioSimpleTDA d1,ColaTDA cd2){
+    public static void DesinscribirseMateria(ConjuntoMateriasTDA c1, DiccionarioSimpleTDA d1, ColaTDA cd2){
 
         String codigo;
         String materia;
@@ -168,20 +218,21 @@ public class Main {
         Materias m = new Materias(codigo,materia);
 
 
-        if(!c1.pertenece(m)){
+        if(!c1.Pertenece(m)){
             System.out.println("La materia no existe en el sistema");
             Pausa();
         }
-        else{
+        //Buscamos con el metodo recuperar para obtener el conjunto del alumno para verficar si la materia no pertenece al mismo
+        else {
             System.out.println("Introduce su numero de dni");
             dni = teclado.nextInt();
             teclado.nextLine();
-            Alumnos alumno = d1.recuperar(dni);
+            Alumnos alumno = d1.Recuperar(dni);
 
             if(alumno != null){
-                String l = String.valueOf(dni);
-                if(alumno.getMateriasInscriptas().pertenece(m)){
-                    cd2.acolar(l+"|"+codigo+"|"+materia);
+                String stringDNI = String.valueOf(dni);
+                if(alumno.getMateriasInscriptas().Pertenece(m)){
+                    cd2.Acolar(stringDNI+"|"+codigo+"|"+materia);
                     System.out.println("El pedido de desinscripcion se hizo correctamnete");
                     Pausa();
                 }
@@ -195,36 +246,37 @@ public class Main {
         }
     }
 
-    //Funcion para procesar las inscripciones hechas por los alumnos a traves de la ColaDinamicaTDA
+    //Funcion para procesar las desinscripciones hechas por los alumnos a traves de la ColaDinamicaTDA
     public static void ProcesarDesinscripciones(ColaTDA cd2, DiccionarioSimpleTDA d1){
-        while(!cd2.estaVacia()){
-            String valor = cd2.primero();
+        //Utilizamos el metodo split para poder separar los datos que recibimos como String para manipularlos
+        while(!cd2.ColaVacia()){
+            String valor = cd2.Primero();
             String[] partes = valor.split("\\|");
             int dni = Integer.parseInt(partes[0]);
             Materias m = new Materias(partes[1], partes[2]);
 
-            Alumnos alumno = d1.recuperar(dni);
+            Alumnos alumno = d1.Recuperar(dni);
             if(alumno != null){
-                if(alumno.getMateriasInscriptas().pertenece(m)) {
-                    alumno.getMateriasInscriptas().sacar(m);
+                if(alumno.getMateriasInscriptas().Pertenece(m)) {
+                    alumno.getMateriasInscriptas().Sacar(m);
                 }
             }
-            cd2.desacolar();
+            cd2.Desacolar();
         }
-        System.out.println("Se procesaron todas las desinscripciones");
+
     }
 
     //Funcion main donde se ejecuta el menu y carga de datos
     public static void main(String[] args) {
 
         DiccionarioSimpleTDA d1 = new DiccionarioSimpleEstaticoTDA();
-        ConjuntoStringTDA c1 = new ConjuntoEstaticoStringTDA();
+        ConjuntoMateriasTDA c1 = new ConjuntoEstaticoMateriasTDA();
         ColaTDA cd1 = new ColaDinamicaStringTDA();
         ColaTDA cd2 = new ColaDinamicaStringTDA();
-        c1.inicializar();
-        cd1.inicializar();
-        cd2.inicializar();
-        d1.inicializar();
+        c1.InicializarConjunto();
+        cd1.InicializarCola();
+        cd2.InicializarCola();
+        d1.InicializarDiccionario();
 
         CargaDeDatos.cargarDatos(c1,cd1,d1);
 
@@ -238,7 +290,9 @@ public class Main {
             System.out.println("[2],Sacar Materias");
             System.out.println("[3],Inscribirse a Materias");
             System.out.println("[4],Desinscribirse a Materias");
-            System.out.println("[5],Procesar Inscripciones");
+            System.out.println("[5],Procesar Inscripciones/Desincripciones");
+            System.out.println("[6] Mostrar Alumnos");
+            System.out.println("----------------");
 
             opcion = teclado.nextInt();
             teclado.nextLine();
@@ -249,7 +303,7 @@ public class Main {
                 AgregarMateria(c1);
             }
             else if(opcion==2){
-                SacarMateria(c1);
+                SacarMateria(c1,d1);
             }
             else if(opcion==3){
                 InscribirseMateria(c1,d1,cd1);
@@ -258,40 +312,21 @@ public class Main {
                 DesinscribirseMateria(c1,d1,cd2);
             }
             else if(opcion == 5) {
-                // se llama a los dos prosc
-                ProcesarInscripciones(cd1, d1);
+                // se llama a los dos proscesos
+                ProcesarInscripciones(cd1, d1,c1);
                 ProcesarDesinscripciones(cd2, d1);
                 System.out.println("Todos los cambios procesados.");
                 Pausa();
+            }
+            else if(opcion == 6){
+                mostarAlumnos(d1);
             }
             else{
                 System.out.println("Opcion invalida");
                 Pausa();
             }
-        }
-
-
-        ConjuntoEstaticoTDA claves = d1.obtenerClaves();
-        while(!claves.estaVacio()) {
-            int d = claves.elegir();
-            Alumnos alumno = d1.recuperar(d);
-            ConjuntoStringTDA materiasAlumno = alumno.getMateriasInscriptas();
-            ConjuntoStringTDA auxReporte = new ConjuntoEstaticoStringTDA();
-            auxReporte.inicializar();
-
-            while (!materiasAlumno.estaVacio()) {
-                Materias m = materiasAlumno.elegir();
-                System.out.println(d + "|" + alumno.getNombre() + "|" + m.getCodigo() + "|" + m.getMateria());
-                auxReporte.agregar(m);
-                materiasAlumno.sacar(m);
-            }
-            // se restaura la mat del alumn
-            while(!auxReporte.estaVacio()){
-                Materias m = auxReporte.elegir();
-                materiasAlumno.agregar(m);
-                auxReporte.sacar(m);
-            }
-            claves.sacar(d);
-            }
+          }
         }
     }
+
+    //Solucionar el problema de cuando se saca una materia del conjuto, se debe poder desinscribir la persona a esa misma materia

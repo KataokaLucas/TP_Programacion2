@@ -1,17 +1,16 @@
 package Entidades;
 
-import tdas.ConjuntoStringTDA;
-import tdas.ConjuntoTDA;
+import tdas.ConjuntoMateriasTDA;
 
 public class Alumnos {
     private String nombre;
-    private ConjuntoStringTDA materiasInscriptas;
+    private ConjuntoMateriasTDA materiasInscriptas;
 
     public Alumnos(){
 
     }
 
-    public Alumnos(String nombre,ConjuntoStringTDA materias){
+    public Alumnos(String nombre, ConjuntoMateriasTDA materias){
         this.nombre = nombre;
         this.materiasInscriptas = materias;
     }
@@ -20,7 +19,7 @@ public class Alumnos {
         return nombre;
     }
 
-    public ConjuntoStringTDA getMateriasInscriptas(){
+    public ConjuntoMateriasTDA getMateriasInscriptas(){
         return materiasInscriptas;
     }
 

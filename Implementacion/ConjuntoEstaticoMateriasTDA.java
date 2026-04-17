@@ -1,26 +1,26 @@
 package Implementacion;
 import Entidades.Materias;
-import tdas.ConjuntoStringTDA;
+import tdas.ConjuntoMateriasTDA;
 
-public class ConjuntoEstaticoStringTDA implements ConjuntoStringTDA {
+public class ConjuntoEstaticoMateriasTDA implements ConjuntoMateriasTDA {
     private Materias[] elementos;
     private int cantidad;
     @Override
-    public void inicializar() {
+    public void InicializarConjunto() {
         elementos = new Materias[100];
         cantidad = 0;
     }
 
     @Override
-    public void agregar(Materias valor) {
-        if(!pertenece(valor)){
+    public void Agregar(Materias valor) {
+        if(!Pertenece(valor)){
             elementos[cantidad] = valor;
             cantidad++;
         }
     }
 
     @Override
-    public void sacar(Materias valor) {
+    public void Sacar(Materias valor) {
         boolean encontrado = false;
         for(int i=0;i<cantidad && !encontrado;i++){
             if(elementos[i].getCodigo().equalsIgnoreCase(valor.getCodigo()) && elementos[i].getMateria().equalsIgnoreCase(valor.getMateria())){
@@ -33,12 +33,12 @@ public class ConjuntoEstaticoStringTDA implements ConjuntoStringTDA {
     }
 
     @Override
-    public Materias elegir() {
+    public Materias Elegir() {
         return elementos[cantidad-1];
     }
 
     @Override
-    public boolean pertenece(Materias valor ) {
+    public boolean Pertenece(Materias valor ) {
         boolean encontrado = false;
         for(int i=0;i<cantidad && !encontrado;i++){
             if(elementos[i].getCodigo().equalsIgnoreCase(valor.getCodigo()) && elementos[i].getMateria().equalsIgnoreCase(valor.getMateria())){
@@ -49,7 +49,7 @@ public class ConjuntoEstaticoStringTDA implements ConjuntoStringTDA {
     }
 
     @Override
-    public boolean estaVacio() {
+    public boolean ConjuntoVacio() {
         return cantidad == 0;
     }
 }
