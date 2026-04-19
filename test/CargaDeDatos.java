@@ -9,6 +9,8 @@ import tdas.DiccionarioSimpleTDA;
 
 public class CargaDeDatos {
 
+    //Cargamos datos de prueba para testear el sistema
+    //Tiene un costo temporal de O(1) ya que no depende de una cantidad n que haga crecer esta carga de datos
     public static void cargarDatos(ConjuntoMateriasTDA c1, ColaTDA cd1, DiccionarioSimpleTDA d1) {
         //Carga de materias
         Materias m1 = new Materias("1001","Calculo I");
@@ -41,7 +43,7 @@ public class CargaDeDatos {
         c1.Agregar(m13);
         c1.Agregar(m14);
 
-        //Carga de Alumnos
+        //Creacion de Conjunto de Alumnos
         ConjuntoMateriasTDA c2 = new ConjuntoEstaticoMateriasTDA();
         ConjuntoMateriasTDA c3 = new ConjuntoEstaticoMateriasTDA();
         ConjuntoMateriasTDA c4 = new ConjuntoEstaticoMateriasTDA();
@@ -49,7 +51,7 @@ public class CargaDeDatos {
         ConjuntoMateriasTDA c6 = new ConjuntoEstaticoMateriasTDA();
         ConjuntoMateriasTDA c7 = new ConjuntoEstaticoMateriasTDA();
 
-// Inicialización de los conjuntos
+        // Inicialización de los conjuntos
         c2.InicializarConjunto();
         c3.InicializarConjunto();
         c4.InicializarConjunto();
@@ -57,18 +59,18 @@ public class CargaDeDatos {
         c6.InicializarConjunto();
         c7.InicializarConjunto();
 
-//Agregando materias a algunos conjuntos de materias de unos alumnos
+        //Agregando materias a algunos conjuntos de materias de alumnos
         c3.Agregar(m2);
         c3.Agregar(m1);
         c3.Agregar(m4);
         c4.Agregar(m2);
         c4.Agregar(m1);
         c5.Agregar(m3);
-        c6.Agregar(m6);
+        c6.Agregar(m1);
         c6.Agregar(m5);
 
 
-// Creación de nuevos objetos Alumnos
+        // Creación de nuevos objetos Alumnos
         Alumnos a1 = new Alumnos("Lucas Kataoka",c2);
         Alumnos a2 = new Alumnos("Franco De Vincenzo",c3);
         Alumnos a3 = new Alumnos("Micaela Garcia", c4);
@@ -76,13 +78,13 @@ public class CargaDeDatos {
         Alumnos a5 = new Alumnos("Sofia Martinez", c6);
         Alumnos a6 = new Alumnos("Diego Perez", c7);
 
-// Agregando al diccionario d1 (DNI o Legajo, Objeto Alumno)
+        // Agregando al diccionario d1 (DNI, Objeto Alumno)
         d1.Agregar(45223112, a3);
         d1.Agregar(43900124, a4);
         d1.Agregar(46123456, a5);
         d1.Agregar(42888999, a6);
         d1.Agregar(47130033,a1);
-        d1.Agregar(1189064,a2);
+        d1.Agregar(47120044,a2);
 
 
 

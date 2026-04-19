@@ -2,8 +2,8 @@ package Entidades;
 
 public class Materias {
 
-    private String codigo;
-    private String materia;
+    protected String codigo;
+    protected String materia;
 
     public Materias(){
     }

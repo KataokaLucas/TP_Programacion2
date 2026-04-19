@@ -2,7 +2,7 @@ package Entidades;
 
 import tdas.ConjuntoMateriasTDA;
 
-public class Alumnos {
+public class Alumnos extends Materias {
     private String nombre;
     private ConjuntoMateriasTDA materiasInscriptas;
 
@@ -10,7 +10,8 @@ public class Alumnos {
 
     }
 
-    public Alumnos(String nombre, ConjuntoMateriasTDA materias){
+    public Alumnos(String nombre, ConjuntoMateriasTDA materias)
+    {
         this.nombre = nombre;
         this.materiasInscriptas = materias;
     }
